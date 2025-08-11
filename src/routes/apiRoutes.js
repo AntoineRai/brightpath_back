@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
+const { apiLimiter, sensitiveLimiter } = require('../config/rateLimit');
 
-// Middleware d'authentification pour toutes les routes API
+// Middleware d'authentification et rate limiting pour toutes les routes API
 router.use(authenticateToken);
+router.use(apiLimiter);
 
 // Route hello protégée
 router.get('/hello', (req, res) => {

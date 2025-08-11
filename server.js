@@ -9,13 +9,33 @@ const apiRoutes = require('./src/routes/apiRoutes');
 // Import de la configuration Supabase
 const { testConnection } = require('./src/config/supabase');
 
+// Import des middlewares de sécurité
+const { globalLimiter } = require('./src/config/rateLimit');
+const { 
+  securityMiddleware, 
+  customSecurityHeaders, 
+  requestSizeLimiter, 
+  contentTypeValidator, 
+  attackLogger 
+} = require('./src/middleware/security');
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
+// Middlewares de sécurité (à appliquer en premier)
+app.use(securityMiddleware);
+app.use(customSecurityHeaders);
+app.use(attackLogger);
+app.use(requestSizeLimiter);
+app.use(contentTypeValidator);
+
+// Rate limiter global
+app.use(globalLimiter);
+
+// Middleware CORS et parsing
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Route de base (Publique - pas besoin de JWT)
 app.get('/', (req, res) => {
@@ -49,6 +69,9 @@ app.use('/api/auth', authRoutes);
 // Routes API protégées (nécessitent JWT)
 app.use('/api', apiRoutes);
 
+// Import du middleware de gestion d'erreurs
+const errorHandler = require('./src/middleware/errorHandler');
+
 // Gestion des erreurs 404
 app.use('*', (req, res) => {
   res.status(404).json({
@@ -59,13 +82,7 @@ app.use('*', (req, res) => {
 });
 
 // Gestion des erreurs globales
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    error: 'Erreur interne du serveur',
-    status: 500
-  });
-});
+app.use(errorHandler);
 
 // Démarrage du serveur
 app.listen(PORT, async () => {
@@ -73,6 +90,7 @@ app.listen(PORT, async () => {
   console.log(`📡 API disponible sur http://localhost:${PORT}`);
   console.log(`🔐 Système JWT intégré`);
   console.log(`🗄️  Base de données Supabase connectée`);
+  console.log(`🛡️  Système de sécurité et rate limiting activé`);
   console.log(`🔗 Endpoints disponibles:`);
   console.log(`   📍 Routes publiques:`);
   console.log(`      GET  http://localhost:${PORT}/`);

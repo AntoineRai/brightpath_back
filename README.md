@@ -1,6 +1,6 @@
-# API Express avec JWT et Supabase - BrightPath
+# API Express avec JWT, Supabase et Sécurité - BrightPath
 
-Une API Express sécurisée avec authentification JWT, base de données Supabase et structure modulaire.
+Une API Express sécurisée avec authentification JWT, base de données Supabase, rate limiting et protection contre les attaques.
 
 ## Installation
 
@@ -55,6 +55,25 @@ L'API utilise un système d'authentification JWT (JSON Web Token) avec deux type
 Après avoir exécuté le script SQL, vous aurez accès à :
 - **Admin:** `admin@brightpath.com` / `password`
 - **User:** `user@brightpath.com` / `password`
+
+## 🛡️ Système de Sécurité
+
+### Rate Limiting
+L'API est protégée par plusieurs niveaux de rate limiting :
+
+- **Global** : 100 requêtes par 15 minutes par IP
+- **Authentification** : 5 tentatives de connexion par 15 minutes
+- **Inscription** : 3 tentatives par heure
+- **API protégée** : 1000 requêtes par 15 minutes (utilisateurs authentifiés)
+- **Routes sensibles** : 50 requêtes par 15 minutes
+
+### Protection contre les attaques
+- **Headers de sécurité** (Helmet)
+- **Validation des types de contenu**
+- **Limitation de taille des requêtes** (10MB max)
+- **Détection de tentatives d'attaque** (XSS, SQL Injection, etc.)
+- **CORS configuré**
+- **Protection XSS et CSRF**
 
 ## Endpoints disponibles
 
@@ -250,13 +269,16 @@ brightpath_back/
 └── src/
     ├── config/
     │   ├── jwt.js            # Configuration JWT
-    │   └── supabase.js       # Configuration Supabase
+    │   ├── supabase.js       # Configuration Supabase
+    │   └── rateLimit.js      # Configuration rate limiting
     ├── controllers/
     │   └── authController.js # Contrôleur d'authentification
     ├── models/
     │   └── User.js           # Modèle User pour Supabase
     ├── middleware/
-    │   └── auth.js           # Middleware d'authentification JWT
+    │   ├── auth.js           # Middleware d'authentification JWT
+    │   ├── security.js       # Middleware de sécurité
+    │   └── errorHandler.js   # Gestionnaire d'erreurs
     ├── routes/
     │   ├── authRoutes.js     # Routes d'authentification
     │   └── apiRoutes.js      # Routes API protégées
@@ -271,5 +293,7 @@ brightpath_back/
 - **JWT (jsonwebtoken)** - Authentification par tokens
 - **bcryptjs** - Hachage sécurisé des mots de passe
 - **Supabase** - Base de données PostgreSQL hébergée
+- **express-rate-limit** - Protection contre les spams et attaques
+- **Helmet** - Headers de sécurité
 - **dotenv** - Gestion des variables d'environnement
 - **Nodemon** - Outil de développement pour auto-reload 
