@@ -59,12 +59,20 @@ Après avoir exécuté le script SQL, vous aurez accès à :
 ## 🛡️ Système de Sécurité
 
 ### Rate Limiting
-L'API est protégée par plusieurs niveaux de rate limiting :
+L'API est protégée par plusieurs niveaux de rate limiting qui s'adaptent à l'environnement :
 
+#### Mode Développement (`NODE_ENV=development`)
+- **Global** : 10 000 requêtes par 15 minutes par IP
+- **Authentification** : 100 tentatives de connexion par 15 minutes
+- **Inscription** : 50 tentatives par heure
+- **API protégée** : 10 000 requêtes par 15 minutes (utilisateurs authentifiés)
+- **Routes sensibles** : 1 000 requêtes par 15 minutes
+
+#### Mode Production (`NODE_ENV=production`)
 - **Global** : 100 requêtes par 15 minutes par IP
 - **Authentification** : 5 tentatives de connexion par 15 minutes
 - **Inscription** : 3 tentatives par heure
-- **API protégée** : 1000 requêtes par 15 minutes (utilisateurs authentifiés)
+- **API protégée** : 1 000 requêtes par 15 minutes (utilisateurs authentifiés)
 - **Routes sensibles** : 50 requêtes par 15 minutes
 
 ### Protection contre les attaques
@@ -203,6 +211,63 @@ L'API est protégée par plusieurs niveaux de rate limiting :
 - **URL:** `POST /api/auth/logout`
 - **Description:** Déconnecte l'utilisateur
 
+### 📝 Gestion des Candidatures
+
+#### 11. Créer une candidature
+- **URL:** `POST /api/applications`
+- **Body:** JSON avec les champs de la candidature
+- **Description:** Crée une nouvelle candidature pour l'utilisateur connecté
+- **Exemple:**
+```json
+{
+  "company": "TechCorp",
+  "position": "Développeur Full Stack",
+  "application_date": "2024-01-15",
+  "status": "pending",
+  "location": "Paris, France",
+  "salary": "45k-55k€",
+  "contact_person": "Jean Dupont",
+  "contact_email": "jean.dupont@techcorp.com",
+  "job_description": "Développement d'applications web modernes"
+}
+```
+
+#### 12. Récupérer toutes les candidatures
+- **URL:** `GET /api/applications`
+- **Paramètres de requête:** `status`, `limit`, `offset`, `orderBy`, `orderDirection`
+- **Description:** Récupère toutes les candidatures de l'utilisateur connecté
+
+#### 13. Récupérer une candidature spécifique
+- **URL:** `GET /api/applications/:id`
+- **Description:** Récupère une candidature spécifique par ID
+
+#### 14. Mettre à jour une candidature
+- **URL:** `PUT /api/applications/:id`
+- **Body:** JSON avec les champs à mettre à jour
+- **Description:** Met à jour une candidature existante
+
+#### 15. Supprimer une candidature
+- **URL:** `DELETE /api/applications/:id`
+- **Description:** Supprime une candidature
+
+#### 16. Statistiques des candidatures
+- **URL:** `GET /api/applications/stats`
+- **Description:** Récupère les statistiques des candidatures (total, par statut, taux de réussite)
+
+#### 17. Rechercher des candidatures
+- **URL:** `GET /api/applications/search`
+- **Paramètres de requête:** `company`, `position`, `status`, `dateFrom`, `dateTo`
+- **Description:** Recherche des candidatures avec filtres
+
+#### 18. Candidatures récentes
+- **URL:** `GET /api/applications/recent`
+- **Paramètres de requête:** `days` (défaut: 30)
+- **Description:** Récupère les candidatures des derniers jours
+
+#### 19. Compteurs par statut
+- **URL:** `GET /api/applications/count`
+- **Description:** Récupère le nombre de candidatures par statut
+
 ## Test de l'API
 
 ### Avec curl
@@ -265,23 +330,27 @@ brightpath_back/
 ├── README.md                 # Documentation
 ├── env.example               # Exemple de variables d'environnement
 ├── database/
-│   └── schema.sql            # Script SQL pour Supabase
+│   ├── schema.sql            # Script SQL pour Supabase
+│   └── applications_schema.sql # Script SQL pour les candidatures
 └── src/
     ├── config/
     │   ├── jwt.js            # Configuration JWT
     │   ├── supabase.js       # Configuration Supabase
     │   └── rateLimit.js      # Configuration rate limiting
     ├── controllers/
-    │   └── authController.js # Contrôleur d'authentification
+    │   ├── authController.js # Contrôleur d'authentification
+    │   └── applicationController.js # Contrôleur des candidatures
     ├── models/
-    │   └── User.js           # Modèle User pour Supabase
+    │   ├── User.js           # Modèle User pour Supabase
+    │   └── Application.js    # Modèle Application pour Supabase
     ├── middleware/
     │   ├── auth.js           # Middleware d'authentification JWT
     │   ├── security.js       # Middleware de sécurité
     │   └── errorHandler.js   # Gestionnaire d'erreurs
     ├── routes/
     │   ├── authRoutes.js     # Routes d'authentification
-    │   └── apiRoutes.js      # Routes API protégées
+    │   ├── apiRoutes.js      # Routes API protégées
+    │   └── applicationRoutes.js # Routes des candidatures
     └── utils/
         └── jwtUtils.js       # Utilitaires JWT
 ```

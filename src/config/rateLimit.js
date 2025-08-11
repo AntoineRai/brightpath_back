@@ -1,5 +1,8 @@
 const rateLimit = require('express-rate-limit');
 
+// Détecter l'environnement
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 // Configuration générale du rate limiter
 const createRateLimiter = (windowMs, max, message, skipSuccessfulRequests = false) => {
   return rateLimit({
@@ -28,7 +31,7 @@ const createRateLimiter = (windowMs, max, message, skipSuccessfulRequests = fals
 // Rate limiter global (toutes les routes)
 const globalLimiter = createRateLimiter(
   15 * 60 * 1000, // 15 minutes
-  100, // 100 requêtes par 15 minutes
+  isDevelopment ? 10000 : 100, // 10000 en dev, 100 en prod
   'Trop de requêtes depuis cette IP. Veuillez réessayer plus tard.',
   true // Ignore les requêtes réussies
 );
@@ -36,7 +39,7 @@ const globalLimiter = createRateLimiter(
 // Rate limiter pour l'authentification (plus strict)
 const authLimiter = createRateLimiter(
   15 * 60 * 1000, // 15 minutes
-  5, // 5 tentatives de connexion par 15 minutes
+  isDevelopment ? 100 : 5, // 100 en dev, 5 en prod
   'Trop de tentatives de connexion. Veuillez réessayer dans 15 minutes.',
   false // Compte toutes les tentatives
 );
@@ -44,7 +47,7 @@ const authLimiter = createRateLimiter(
 // Rate limiter pour l'inscription (très strict)
 const registerLimiter = createRateLimiter(
   60 * 60 * 1000, // 1 heure
-  3, // 3 tentatives d'inscription par heure
+  isDevelopment ? 50 : 3, // 50 en dev, 3 en prod
   'Trop de tentatives d\'inscription. Veuillez réessayer dans 1 heure.',
   false // Compte toutes les tentatives
 );
@@ -52,7 +55,7 @@ const registerLimiter = createRateLimiter(
 // Rate limiter pour les routes API protégées
 const apiLimiter = createRateLimiter(
   15 * 60 * 1000, // 15 minutes
-  1000, // 1000 requêtes par 15 minutes
+  isDevelopment ? 10000 : 1000, // 10000 en dev, 1000 en prod
   'Trop de requêtes API. Veuillez réessayer plus tard.',
   true // Ignore les requêtes réussies
 );
@@ -60,7 +63,7 @@ const apiLimiter = createRateLimiter(
 // Rate limiter pour les routes sensibles (profil, etc.)
 const sensitiveLimiter = createRateLimiter(
   15 * 60 * 1000, // 15 minutes
-  50, // 50 requêtes par 15 minutes
+  isDevelopment ? 1000 : 50, // 1000 en dev, 50 en prod
   'Trop de requêtes sur cette route sensible. Veuillez réessayer plus tard.',
   true // Ignore les requêtes réussies
 );
@@ -68,7 +71,7 @@ const sensitiveLimiter = createRateLimiter(
 // Rate limiter pour les erreurs 4xx/5xx (protection contre les attaques)
 const errorLimiter = createRateLimiter(
   15 * 60 * 1000, // 15 minutes
-  20, // 20 erreurs par 15 minutes
+  isDevelopment ? 500 : 20, // 500 en dev, 20 en prod
   'Trop d\'erreurs détectées. Veuillez réessayer plus tard.',
   false // Compte toutes les erreurs
 );

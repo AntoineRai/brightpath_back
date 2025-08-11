@@ -5,6 +5,7 @@ const cors = require('cors');
 // Import des routes
 const authRoutes = require('./src/routes/authRoutes');
 const apiRoutes = require('./src/routes/apiRoutes');
+const applicationRoutes = require('./src/routes/applicationRoutes');
 
 // Import de la configuration Supabase
 const { testConnection } = require('./src/config/supabase');
@@ -69,6 +70,9 @@ app.use('/api/auth', authRoutes);
 // Routes API protégées (nécessitent JWT)
 app.use('/api', apiRoutes);
 
+// Routes des candidatures (protégées)
+app.use('/api/applications', applicationRoutes);
+
 // Import du middleware de gestion d'erreurs
 const errorHandler = require('./src/middleware/errorHandler');
 
@@ -91,6 +95,8 @@ app.listen(PORT, async () => {
   console.log(`🔐 Système JWT intégré`);
   console.log(`🗄️  Base de données Supabase connectée`);
   console.log(`🛡️  Système de sécurité et rate limiting activé`);
+  console.log(`🌍 Environnement: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`⚡ Rate limiting: ${process.env.NODE_ENV === 'development' ? 'Mode développement (limites élevées)' : 'Mode production (limites strictes)'}`);
   console.log(`🔗 Endpoints disponibles:`);
   console.log(`   📍 Routes publiques:`);
   console.log(`      GET  http://localhost:${PORT}/`);
@@ -103,6 +109,11 @@ app.listen(PORT, async () => {
   console.log(`      GET  http://localhost:${PORT}/api/data`);
   console.log(`      GET  http://localhost:${PORT}/api/auth/me`);
   console.log(`      POST http://localhost:${PORT}/api/auth/logout`);
+  console.log(`   📝 Routes des candidatures:`);
+  console.log(`      POST http://localhost:${PORT}/api/applications`);
+  console.log(`      GET  http://localhost:${PORT}/api/applications`);
+  console.log(`      GET  http://localhost:${PORT}/api/applications/stats`);
+  console.log(`      GET  http://localhost:${PORT}/api/applications/search`);
   
   // Tester la connexion Supabase
   try {
