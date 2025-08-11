@@ -40,20 +40,6 @@ INSERT INTO users (email, password, name, role) VALUES
     ('user@brightpath.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Utilisateur', 'user')
 ON CONFLICT (email) DO NOTHING;
 
--- Créer une politique RLS (Row Level Security) pour sécuriser la table
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-
--- Politique pour permettre la lecture de son propre profil
-CREATE POLICY "Users can view own profile" ON users
-    FOR SELECT USING (auth.uid() = id);
-
--- Politique pour permettre la mise à jour de son propre profil
-CREATE POLICY "Users can update own profile" ON users
-    FOR UPDATE USING (auth.uid() = id);
-
--- Politique pour permettre l'insertion de nouveaux utilisateurs (inscription)
-CREATE POLICY "Allow user registration" ON users
-    FOR INSERT WITH CHECK (true);
-
--- Note: Ces politiques RLS sont pour Supabase Auth
--- Pour notre API JWT personnalisée, nous gérons l'autorisation dans le code 
+-- Note: Nous n'utilisons pas les politiques RLS de Supabase Auth
+-- car nous gérons l'authentification avec notre propre système JWT
+-- L'autorisation est gérée dans le code de l'API 
