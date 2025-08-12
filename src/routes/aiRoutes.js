@@ -13,4 +13,7 @@ const aiRateLimiter = sensitiveLimiter;
 // Route pour la génération de lettres de motivation
 router.post('/cover-letter', aiRateLimiter, aiController.generateCoverLetter);
 
+// Route pour professionnaliser un texte pour CV
+router.post('/professionalize-text', aiRateLimiter, aiController.professionalizeText);
+
 module.exports = router; 

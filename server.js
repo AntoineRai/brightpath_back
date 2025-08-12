@@ -123,6 +123,7 @@ app.listen(PORT, async () => {
   console.log(`      GET  http://localhost:${PORT}/api/applications/search`);
   console.log(`   🤖 Routes AI (ChatGPT):`);
   console.log(`      POST http://localhost:${PORT}/api/ai/cover-letter`);
+  console.log(`      POST http://localhost:${PORT}/api/ai/professionalize-text`);
   
   // Tester la connexion Supabase
   try {

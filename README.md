@@ -306,6 +306,31 @@ L'API intègre des fonctionnalités d'IA pour assister les candidats dans leur r
 }
 ```
 
+#### 21. Professionnalisation de texte pour CV
+- **URL:** `POST /api/ai/professionalize-text`
+- **Description:** Transforme un texte informel en version professionnelle adaptée à un CV
+- **Body requis:**
+```json
+{
+  "originalText": "Pendant mon alternance à Cap Habitat j'ai eu l'occasion de bosser dans plusieurs domaines",
+  "context": "Développeur web, alternance"
+}
+```
+- **Réponse:**
+```json
+{
+  "message": "Texte professionnalisé avec succès",
+  "content": "Dans le cadre de mon alternance chez Cap Habitat, j'ai pu développer une expertise polyvalente en intervenant sur divers projets techniques et fonctionnels.",
+  "usage": {
+    "prompt_tokens": 45,
+    "completion_tokens": 28,
+    "total_tokens": 73
+  },
+  "model": "gpt-3.5-turbo",
+  "generatedAt": "2024-01-15T10:30:00.000Z"
+}
+```
+
 ## Test de l'API
 
 ### Avec curl
@@ -352,6 +377,15 @@ curl -X POST http://localhost:3001/api/ai/cover-letter \
     "telephone": "06 12 34 56 78",
     "adresse": "123 Rue de la Paix, 75001 Paris",
     "destinataire": "Mme Martin, Responsable RH"
+  }'
+
+# Test de professionnalisation de texte pour CV (nécessite le token)
+curl -X POST http://localhost:3001/api/ai/professionalize-text \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -d '{
+    "originalText": "Pendant mon alternance à Cap Habitat j'\''ai eu l'\''occasion de bosser dans plusieurs domaines",
+    "context": "Développeur web, alternance"
   }'
 
 

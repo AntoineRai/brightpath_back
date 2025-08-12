@@ -81,6 +81,24 @@ class AIUtils {
 
     return await this.generateContent('coverLetter', data);
   }
+
+  // Professionnaliser un texte pour CV
+  static async professionalizeText(data) {
+    const requiredFields = ['originalText'];
+    
+    // Vérifier les champs requis
+    for (const field of requiredFields) {
+      if (!data[field]) {
+        return {
+          success: false,
+          error: `Champ requis manquant: ${field}`,
+          content: null
+        };
+      }
+    }
+
+    return await this.generateContent('professionalizeText', data);
+  }
 }
 
 module.exports = AIUtils; 

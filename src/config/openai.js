@@ -70,6 +70,20 @@ const defaultPrompts = {
     - Une conclusion engageante
     
     Retourne UNIQUEMENT le contenu de la lettre, en commençant par "Objet : Candidature au poste de [poste]". Ne pas inclure les coordonnées en en-tête ni de commentaire final.`
+  },
+  
+  professionalizeText: {
+    system: `Tu es un expert en rédaction professionnelle pour CV et en recrutement.
+    Tu dois transformer un texte informel en version professionnelle et technique adaptée à un CV.
+    Utilise un vocabulaire professionnel, des verbes d'action, et des termes techniques appropriés.
+    Garde le même sens mais rends le texte plus impactant et professionnel.`,
+    user: `Transforme ce texte en version professionnelle pour un CV :
+    
+    Texte original : {originalText}
+    
+    Contexte (optionnel) : {context}
+    
+    Retourne UNIQUEMENT la version professionnalisée du texte, sans commentaire ni explication.`
   }
 };
 
