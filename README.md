@@ -21,7 +21,7 @@ npm install
 
 ### 3. Variables d'environnement
 1. Copiez le fichier `env.example` vers `.env`
-2. Remplissez les variables avec vos informations Supabase :
+2. Remplissez les variables avec vos informations Supabase et OpenAI :
 
 ```bash
 # Configuration Supabase
@@ -31,6 +31,9 @@ SUPABASE_ANON_KEY=votre-clé-anon-supabase
 # Configuration JWT
 JWT_SECRET=votre-secret-jwt-super-securise
 JWT_REFRESH_SECRET=votre-refresh-secret-super-securise
+
+# Configuration OpenAI (pour les fonctionnalités IA)
+OPENAI_API_KEY=votre-clé-api-openai
 ```
 
 ## Démarrage
@@ -268,6 +271,41 @@ L'API est protégée par plusieurs niveaux de rate limiting qui s'adaptent à l'
 - **URL:** `GET /api/applications/count`
 - **Description:** Récupère le nombre de candidatures par statut
 
+### 🤖 Intelligence Artificielle (ChatGPT)
+
+L'API intègre des fonctionnalités d'IA pour assister les candidats dans leur recherche d'emploi. Toutes les routes IA nécessitent une authentification JWT et sont protégées par un rate limiting strict.
+
+#### 20. Génération de lettres de motivation
+- **URL:** `POST /api/ai/cover-letter`
+- **Description:** Génère une lettre de motivation personnalisée et professionnelle
+- **Body requis:**
+```json
+{
+  "position": "Développeur Full Stack React/Node.js",
+  "company": "TechStartup",
+  "nom": "Dupont",
+  "prenom": "Jean",
+  "email": "jean.dupont@email.com",
+  "telephone": "06 12 34 56 78",
+  "adresse": "123 Rue de la Paix, 75001 Paris",
+  "destinataire": "Mme Martin, Responsable RH"
+}
+```
+- **Réponse:**
+```json
+{
+  "message": "Lettre de motivation générée avec succès",
+  "content": "Jean Dupont\n123 Rue de la Paix\n75001 Paris\njean.dupont@email.com\n06 12 34 56 78\n\n[Date]\n\nMme Martin\nResponsable RH\nTechStartup\n\nObjet : Candidature au poste de Développeur Full Stack React/Node.js\n\nMadame,\n\nSuite à votre annonce pour le poste de Développeur Full Stack React/Node.js, je me permets de vous présenter ma candidature...\n\n[Lettre complète générée par l'IA]",
+  "usage": {
+    "prompt_tokens": 245,
+    "completion_tokens": 312,
+    "total_tokens": 557
+  },
+  "model": "gpt-3.5-turbo",
+  "generatedAt": "2024-01-15T10:30:00.000Z"
+}
+```
+
 ## Test de l'API
 
 ### Avec curl
@@ -300,6 +338,23 @@ curl -X POST http://localhost:3001/api/data \
 # Test du profil utilisateur
 curl -X GET http://localhost:3001/api/auth/me \
   -H "Authorization: Bearer <ACCESS_TOKEN>"
+
+# Test de génération de lettre de motivation (nécessite le token)
+curl -X POST http://localhost:3001/api/ai/cover-letter \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -d '{
+    "position": "Développeur Full Stack React/Node.js",
+    "company": "TechStartup",
+    "nom": "Dupont",
+    "prenom": "Jean",
+    "email": "jean.dupont@email.com",
+    "telephone": "06 12 34 56 78",
+    "adresse": "123 Rue de la Paix, 75001 Paris",
+    "destinataire": "Mme Martin, Responsable RH"
+  }'
+
+
 ```
 
 ### Avec un navigateur
@@ -336,10 +391,12 @@ brightpath_back/
     ├── config/
     │   ├── jwt.js            # Configuration JWT
     │   ├── supabase.js       # Configuration Supabase
+    │   ├── openai.js         # Configuration OpenAI et prompts IA
     │   └── rateLimit.js      # Configuration rate limiting
     ├── controllers/
     │   ├── authController.js # Contrôleur d'authentification
-    │   └── applicationController.js # Contrôleur des candidatures
+    │   ├── applicationController.js # Contrôleur des candidatures
+    │   └── aiController.js   # Contrôleur des fonctionnalités IA
     ├── models/
     │   ├── User.js           # Modèle User pour Supabase
     │   └── Application.js    # Modèle Application pour Supabase
@@ -350,9 +407,11 @@ brightpath_back/
     ├── routes/
     │   ├── authRoutes.js     # Routes d'authentification
     │   ├── apiRoutes.js      # Routes API protégées
-    │   └── applicationRoutes.js # Routes des candidatures
+    │   ├── applicationRoutes.js # Routes des candidatures
+    │   └── aiRoutes.js       # Routes des fonctionnalités IA
     └── utils/
-        └── jwtUtils.js       # Utilitaires JWT
+        ├── jwtUtils.js       # Utilitaires JWT
+        └── aiUtils.js        # Utilitaires pour les fonctionnalités IA
 ```
 
 ## Technologies utilisées
@@ -365,4 +424,5 @@ brightpath_back/
 - **express-rate-limit** - Protection contre les spams et attaques
 - **Helmet** - Headers de sécurité
 - **dotenv** - Gestion des variables d'environnement
-- **Nodemon** - Outil de développement pour auto-reload 
+- **Nodemon** - Outil de développement pour auto-reload
+- **OpenAI** - Intelligence artificielle pour la génération de contenu 

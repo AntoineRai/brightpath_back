@@ -6,9 +6,13 @@ const cors = require('cors');
 const authRoutes = require('./src/routes/authRoutes');
 const apiRoutes = require('./src/routes/apiRoutes');
 const applicationRoutes = require('./src/routes/applicationRoutes');
+const aiRoutes = require('./src/routes/aiRoutes');
 
 // Import de la configuration Supabase
 const { testConnection } = require('./src/config/supabase');
+
+// Import de la configuration OpenAI
+const { testOpenAIConnection } = require('./src/config/openai');
 
 // Import des middlewares de sécurité
 const { globalLimiter } = require('./src/config/rateLimit');
@@ -73,6 +77,9 @@ app.use('/api', apiRoutes);
 // Routes des candidatures (protégées)
 app.use('/api/applications', applicationRoutes);
 
+// Routes AI (protégées)
+app.use('/api/ai', aiRoutes);
+
 // Import du middleware de gestion d'erreurs
 const errorHandler = require('./src/middleware/errorHandler');
 
@@ -114,11 +121,20 @@ app.listen(PORT, async () => {
   console.log(`      GET  http://localhost:${PORT}/api/applications`);
   console.log(`      GET  http://localhost:${PORT}/api/applications/stats`);
   console.log(`      GET  http://localhost:${PORT}/api/applications/search`);
+  console.log(`   🤖 Routes AI (ChatGPT):`);
+  console.log(`      POST http://localhost:${PORT}/api/ai/cover-letter`);
   
   // Tester la connexion Supabase
   try {
     await testConnection();
   } catch (error) {
     console.error('❌ Erreur de connexion à Supabase:', error.message);
+  }
+
+  // Tester la connexion OpenAI
+  try {
+    await testOpenAIConnection();
+  } catch (error) {
+    console.error('❌ Erreur de connexion à OpenAI:', error.message);
   }
 }); 
