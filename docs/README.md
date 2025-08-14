@@ -77,8 +77,3 @@ Pour toute question ou problème :
 - Consultez la [FAQ](faq.md)
 - Vérifiez les [codes d'erreur](error-codes.md)
 - Ouvrez une issue sur GitHub
-
----
-
-**Version :** 1.0.0  
-**Dernière mise à jour :** Janvier 2024 
