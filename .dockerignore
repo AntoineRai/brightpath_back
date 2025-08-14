@@ -1,0 +1,57 @@
+# Dépendances
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Fichiers de test et couverture
+coverage
+.nyc_output
+test-results
+
+# Fichiers de développement
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs
+*.log
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# IDE et éditeurs
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Documentation de développement
+README.md
+docs/
+
+# Fichiers temporaires
+tmp
+temp
+
+# Fichiers de build
+dist
+build
+
+# Fichiers de cache
+.cache
+.parcel-cache
